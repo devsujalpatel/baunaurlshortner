@@ -1,9 +1,11 @@
 import { db } from "@/db/db";
 import { userTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 interface User {
-  username: string;
+  firstname: string;
+  lastname?: string;
   email: string;
   password: string;
 }
@@ -11,17 +13,30 @@ interface User {
 export const POST = async (req: NextRequest) => {
   try {
     const body: User = await req.json();
-    const { username, email, password } = body;
+    const { firstname, lastname, email, password } = body;
 
-    if (!username || !email || !password) {
+    if (!firstname || !email || !password) {
       return NextResponse.json(
         { message: "All fields are required" },
         { status: 400 }
       );
     }
 
+    const [existingUser] = await db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.email, email));
+
+    if (existingUser) {
+      return NextResponse.json(
+        { message: `User with this email: ${email} already exists` },
+        { status: 201 }
+      );
+    }
+
     await db.insert(userTable).values({
-      username,
+      firstname,
+      lastname,
       email,
       password,
     });
