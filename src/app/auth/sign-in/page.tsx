@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useState } from "react";
+import { Loader2Icon } from "lucide-react";
 
 export const formSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -26,6 +28,9 @@ export const formSchema = z.object({
 });
 export default function LoginPage() {
   const router = useRouter();
+
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,6 +40,7 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsDisabled(true);
     try {
       await axios.post("/api/auth/signin", {
         email: values.email,
@@ -45,7 +51,7 @@ export default function LoginPage() {
       });
 
       setTimeout(() => {
-        router.push("/");
+        router.push("/shorten");
       }, 1500);
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
@@ -63,6 +69,8 @@ export default function LoginPage() {
       } else {
         toast.error("Something went wrong");
       }
+    } finally {
+      setIsDisabled(true);
     }
   }
 
@@ -115,7 +123,13 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button className="w-full">Sign In</Button>
+              <Button className="w-full cursor-pointer" disabled={isDisabled}>
+                {isDisabled ? (
+                  <Loader2Icon className="animate-spin size-4" />
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
             </div>
           </div>
 

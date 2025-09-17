@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Loader2Icon } from "lucide-react";
+import { useState } from "react";
 
 export const formSchema = z
   .object({
@@ -37,6 +39,9 @@ export const formSchema = z
 
 export default function SignUpPage() {
   const router = useRouter();
+
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,6 +54,7 @@ export default function SignUpPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsDisabled(true);
     try {
       await axios.post("/api/auth/signup", {
         firstname: values.firstname,
@@ -76,6 +82,8 @@ export default function SignUpPage() {
       } else {
         toast.error("Something went wrong");
       }
+    } finally {
+      setIsDisabled(false);
     }
   }
 
@@ -180,7 +188,14 @@ export default function SignUpPage() {
                 )}
               />
 
-              <Button className="w-full">Sign Up</Button>
+              <Button className="w-full">
+                {" "}
+                {isDisabled ? (
+                  <Loader2Icon className="animate-spin size-4" />
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
             </div>
           </div>
 
