@@ -22,7 +22,6 @@ export const HeroHeader = () => {
       >
         <div className="mx-auto max-w-6xl px-6 transition-all duration-300">
           <div className="relative flex items-center justify-between py-3 lg:py-4">
-            {/* Logo (left) */}
             <Link
               href="/"
               aria-label="home"
