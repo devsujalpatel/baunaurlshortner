@@ -51,7 +51,9 @@ export const POST = async (req: NextRequest) => {
 
     if (hashedPassword !== existingUser.password) {
       return NextResponse.json(
-        { error: "Invalid email or password" },
+        {
+          errors: [{ field: "password", message: "Invalid Email or Password" }],
+        },
         { status: 401 }
       );
     }
@@ -59,7 +61,7 @@ export const POST = async (req: NextRequest) => {
     const token = jwt.sign(
       { id: existingUser.id },
       process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     const response = NextResponse.json(
@@ -67,16 +69,15 @@ export const POST = async (req: NextRequest) => {
         message: "User Login Successfully",
         user: { id: existingUser.id, email },
       },
-
       { status: 200 }
     );
 
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24,
+      sameSite: "strict",
       path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return response;

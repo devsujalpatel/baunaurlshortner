@@ -1,7 +1,10 @@
+"use client";
+
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { ArrowRightIcon } from "lucide-react";
+import HeroSection from "@/components/hero-section";
+
 export default function Home() {
-  return (
-    <div className="text-3xl bg-black h-screen text-white">
-      <h1>Welcome to baunaurl</h1>
-    </div>
-  );
+  return <HeroSection />;
 }

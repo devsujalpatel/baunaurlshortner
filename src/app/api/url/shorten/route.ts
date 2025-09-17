@@ -2,7 +2,11 @@ import { shortenBodySchema } from "@/lib/validations/shorten";
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { createShorten, getUrlByShortCode } from "@/services/url.services";
-import { cookies } from "next/headers";
+import jwt, { JwtPayload } from "jsonwebtoken";
+
+interface DecodedToken extends JwtPayload {
+  id: string;
+}
 
 interface Url {
   url: string;
@@ -11,18 +15,33 @@ interface Url {
 
 export const POST = async (req: NextRequest) => {
   try {
-    const cookieStore = cookies();
-    const userId = (await cookieStore).get("userId")?.value;
+    const token = req.cookies.get("token")?.value;
 
-    if (!userId) {
+    if (!token) {
       return NextResponse.json(
-        { errors: [{ field: "userid", message: "User not logged in" }] },
+        { errors: [{ field: "token", message: "Missing token" }] },
         { status: 401 }
       );
     }
 
-    const body: Url = await req.json();
+    let decoded: DecodedToken;
 
+    try {
+      decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      ) as DecodedToken;
+    } catch {
+      return NextResponse.json(
+        { errors: [{ field: "token", message: "Invalid token" }] },
+        { status: 401 }
+      );
+    }
+
+    const userId = decoded.id;
+
+    // ✅ safer parsing
+    const body = await req.json();
     const parsed = await shortenBodySchema.safeParseAsync(body);
 
     if (!parsed.success) {
@@ -49,14 +68,12 @@ export const POST = async (req: NextRequest) => {
 
     return NextResponse.json(
       {
-        data: [
-          { message: "Url Created Successfully" },
-          {
-            id: result.id,
-            shortcode: result.shortCode,
-            targetUrl: result.targetUrl,
-          },
-        ],
+        data: {
+          message: "Url Created Successfully",
+          id: result.id,
+          shortcode: result.shortCode,
+          targetUrl: result.targetUrl,
+        },
       },
       { status: 201 }
     );

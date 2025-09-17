@@ -46,6 +46,7 @@ export default function LoginPage() {
         email: values.email,
         password: values.password,
       });
+
       toast.success("Login Successful", {
         description: "Redirecting...",
       });
@@ -70,7 +71,7 @@ export default function LoginPage() {
         toast.error("Something went wrong");
       }
     } finally {
-      setIsDisabled(true);
+      setIsDisabled(false);
     }
   }
 
