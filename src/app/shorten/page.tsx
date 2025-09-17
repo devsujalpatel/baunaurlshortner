@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 export const formSchema = z.object({
   targeturl: z
@@ -150,15 +151,10 @@ export default function ShortenUrl() {
       {/* Result Section */}
       {shortUrl && (
         <Card className="mt-8 w-full max-w-lg border bg-muted/50">
-          <CardContent className="flex items-center justify-between p-4">
-            <a
-              href={shortUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary font-medium truncate max-w-[75%]"
-            >
+          <CardContent className="flex items-center justify-between px-4">
+            <p className="text-primary font-medium text-md lg:text-lg truncate max-w-[75%]">
               {shortUrl}
-            </a>
+            </p>
             <Button
               size="icon"
               variant="ghost"
