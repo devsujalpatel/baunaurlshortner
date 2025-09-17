@@ -34,8 +34,12 @@ export const POST = async (req: NextRequest) => {
 
     if (existingUser) {
       return NextResponse.json(
-        { message: `User with this email: ${email} already exists` },
-        { status: 201 }
+        {
+          errors: [
+            { field: "email", message: "User with this email already exists" },
+          ],
+        },
+        { status: 400 }
       );
     }
 
@@ -56,7 +60,7 @@ export const POST = async (req: NextRequest) => {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { errors: [{ field: "form", message: "Failed to create user" }] },
       { status: 500 }
     );
   }

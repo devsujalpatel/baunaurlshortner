@@ -3,6 +3,10 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+import axios from "axios";
 
 import {
   Form,
@@ -14,7 +18,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 export const formSchema = z
@@ -33,6 +36,7 @@ export const formSchema = z
   });
 
 export default function SignUpPage() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,8 +48,35 @@ export default function SignUpPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await axios.post("/api/auth/signup", {
+        firstname: values.firstname,
+        lastname: values.lastname,
+        email: values.email,
+        password: values.password,
+      });
+      toast.success("Signup Successful");
+      setTimeout(() => {
+        router.push("/auth/sign-in");
+      }, 1000);
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response?.data?.errors) {
+        const errors = err.response.data.errors as {
+          field: string;
+          message: string;
+        }[];
+
+        errors.forEach(({ field, message }) => {
+          form.setError(field as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message,
+          });
+        });
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
   }
 
   return (
@@ -119,7 +150,11 @@ export default function SignUpPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="Password" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
