@@ -3,6 +3,8 @@ import { userTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { loginSchema } from "@/lib/validations/auth";
+import { hashPasswordWithSalt } from "@/utils/hash";
 
 interface User {
   email: string;
@@ -12,19 +14,23 @@ interface User {
 export const POST = async (req: NextRequest) => {
   try {
     const body: User = await req.json();
-    const { email, password } = body;
 
-    if (!email || !password) {
+    const parsed = loginSchema.safeParse(body);
+
+    if (!parsed.success) {
       return NextResponse.json(
-        { message: "All fields are required" },
+        { errors: parsed.error.flatten().fieldErrors },
         { status: 400 }
       );
     }
+
+    const { email, password } = parsed.data;
 
     const [existingUser] = await db
       .select({
         id: userTable.id,
         password: userTable.password,
+        salt: userTable.salt,
       })
       .from(userTable)
       .where(eq(userTable.email, email));
@@ -36,9 +42,14 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    if (password !== existingUser.password) {
+    const { hashedPassword } = hashPasswordWithSalt(
+      password,
+      existingUser.salt
+    );
+
+    if (hashedPassword !== existingUser.password) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        { error: "Invalid email or password" },
         { status: 401 }
       );
     }
@@ -50,14 +61,18 @@ export const POST = async (req: NextRequest) => {
     );
 
     const response = NextResponse.json(
-      { message: "User Login Successfully" },
-      { status: 201 }
+      {
+        message: "User Login Successfully",
+        user: { id: existingUser.id, email },
+      },
+
+      { status: 200 }
     );
 
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24, // 24 hr
+      maxAge: 60 * 60 * 24,
       path: "/",
     });
 
