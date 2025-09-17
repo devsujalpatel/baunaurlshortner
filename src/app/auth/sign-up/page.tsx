@@ -22,7 +22,7 @@ import Link from "next/link";
 
 export const formSchema = z
   .object({
-    firstname: z.string().min(3).max(50),
+    firstname: z.string().min(3, "Too small").max(50, "Too large"),
     lastname: z.string().optional(),
     email: z.string().email("Invalid email"),
     password: z.string().min(8, "Password must be at least 8 characters"),
@@ -89,7 +89,7 @@ export default function SignUpPage() {
           <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
             <div className="text-center">
               <h1 className="mb-1 mt-4 text-xl font-semibold">
-                Create an account in Bauan
+                Create an account in Bauana
               </h1>
               <p className="text-sm">
                 Welcome! Create an account to get started

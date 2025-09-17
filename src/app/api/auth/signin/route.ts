@@ -37,7 +37,9 @@ export const POST = async (req: NextRequest) => {
 
     if (!existingUser) {
       return NextResponse.json(
-        { error: `User with this email: ${email} not found` },
+        {
+          errors: [{ field: "email", message: "User not found" }],
+        },
         { status: 404 }
       );
     }

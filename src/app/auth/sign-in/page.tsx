@@ -1,71 +1,131 @@
-import { LogoIcon } from "@/components/logo";
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+import axios from "axios";
+
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormControl,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+export const formSchema = z.object({
+  email: z.string().email("Invalid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
 export default function LoginPage() {
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await axios.post("/api/auth/signin", {
+        email: values.email,
+        password: values.password,
+      });
+      toast.success("Login Successful");
+      setTimeout(() => {
+        router.push("/shorten");
+      }, 1000);
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response?.data?.errors) {
+        const errors = err.response.data.errors as {
+          field: string;
+          message: string;
+        }[];
+
+        errors.forEach(({ field, message }) => {
+          form.setError(field as keyof z.infer<typeof formSchema>, {
+            type: "server",
+            message,
+          });
+        });
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
+  }
+
   return (
     <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
-      <form
-        action=""
-        className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
-      >
-        <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
-          <div className="text-center">
-            <Link href="/" aria-label="go home" className="mx-auto block w-fit">
-              <LogoIcon />
-            </Link>
-            <h1 className="mb-1 mt-4 text-xl font-semibold">
-              Sign In to Tailark
-            </h1>
-            <p className="text-sm">Welcome back! Sign in to continue</p>
-          </div>
-
-          <div className="mt-6 space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="block text-sm">
-                Email
-              </Label>
-              <Input type="email" required name="email" id="email" />
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="bg-muted m-auto h-fit w-full max-w-sm overflow-hidden rounded-[calc(var(--radius)+.125rem)] border shadow-md shadow-zinc-950/5 dark:[--color-muted:var(--color-zinc-900)]"
+        >
+          <div className="bg-card -m-px rounded-[calc(var(--radius)+.125rem)] border p-8 pb-6">
+            <div className="text-center">
+              <h1 className="mb-1 mt-4 text-xl font-semibold">
+                Sign In to Bauana
+              </h1>
+              <p className="text-sm">Welcome back! Sign in to continue</p>
             </div>
 
-            <div className="space-y-0.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="pwd" className="text-sm">
-                  Password
-                </Label>
-                <Button asChild variant="link" size="sm">
-                  <Link
-                    href="/auth/forgot-password"
-                    className="link intent-info variant-ghost text-sm"
-                  >
-                    Forgot your Password ?
-                  </Link>
-                </Button>
-              </div>
-              <Input
-                type="password"
-                required
-                name="pwd"
-                id="pwd"
-                className="input sz-md variant-mixed"
+            <div className="mt-6 space-y-4">
+              {/* Email */}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="Email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
+
+              {/* Password */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button className="w-full">Sign In</Button>
             </div>
-
-            <Button className="w-full">Sign In</Button>
           </div>
-        </div>
 
-        <div className="p-3">
-          <p className="text-accent-foreground text-center text-sm">
-            Don't have an account ?
-            <Button asChild variant="link" className="px-2">
-              <Link href="/auth/sign-up">Create account</Link>
-            </Button>
-          </p>
-        </div>
-      </form>
+          <div className="p-3">
+            <p className="text-accent-foreground text-center text-sm">
+              Don't have a account ?
+              <Button asChild variant="link" className="px-2">
+                <Link href="/auth/sign-up">Sign Up</Link>
+              </Button>
+            </p>
+          </div>
+        </form>
+      </Form>
     </section>
   );
 }
