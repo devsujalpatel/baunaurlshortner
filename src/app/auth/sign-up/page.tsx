@@ -60,7 +60,7 @@ export default function SignUpPage() {
       setTimeout(() => {
         router.push("/auth/sign-in");
       }, 1000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
         const errors = err.response.data.errors as {
           field: string;

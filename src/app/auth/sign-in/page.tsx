@@ -44,7 +44,7 @@ export default function LoginPage() {
       setTimeout(() => {
         router.push("/shorten");
       }, 1000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
         const errors = err.response.data.errors as {
           field: string;
@@ -118,7 +118,7 @@ export default function LoginPage() {
 
           <div className="p-3">
             <p className="text-accent-foreground text-center text-sm">
-              Don't have a account ?
+              Don&apos;t have a account ?
               <Button asChild variant="link" className="px-2">
                 <Link href="/auth/sign-up">Sign Up</Link>
               </Button>
