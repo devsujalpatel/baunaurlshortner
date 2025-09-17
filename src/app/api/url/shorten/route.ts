@@ -8,10 +8,6 @@ interface DecodedToken extends JwtPayload {
   id: string;
 }
 
-interface Url {
-  url: string;
-  code?: string;
-}
 
 export const POST = async (req: NextRequest) => {
   try {
