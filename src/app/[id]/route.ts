@@ -15,7 +15,7 @@ export async function GET(
     .where(eq(urlsTable.shortCode, id));
 
   if (!result) {
-    return NextResponse.json({ error: "Short URL not found" }, { status: 404 });
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.redirect(result.targetUrl);
