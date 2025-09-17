@@ -8,7 +8,6 @@ interface DecodedToken extends JwtPayload {
   id: string;
 }
 
-
 export const POST = async (req: NextRequest) => {
   try {
     const token = req.cookies.get("token")?.value;
@@ -48,7 +47,8 @@ export const POST = async (req: NextRequest) => {
     }
 
     const { url, code } = parsed.data;
-    const shortCode = code ?? nanoid(6);
+
+    const shortCode = code || nanoid(6);
 
     const existingShortCode = await getUrlByShortCode(shortCode);
     if (existingShortCode) {
@@ -67,7 +67,7 @@ export const POST = async (req: NextRequest) => {
         data: {
           message: "Url Created Successfully",
           id: result.id,
-          shortcode: result.shortCode,
+          shortcode: shortCode,
           targetUrl: result.targetUrl,
         },
       },

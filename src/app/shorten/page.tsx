@@ -25,7 +25,7 @@ export const formSchema = z.object({
     .string()
     .min(5, "url must be at least 5 characters")
     .max(255, "Too long"),
-  shortcode: z.string().min(3, "shortcode must be at least 3 characters"),
+  shortcode: z.string().optional(),
 });
 
 export default function ShortenUrl() {
@@ -50,12 +50,15 @@ export default function ShortenUrl() {
       });
       const data = response.data;
 
-      const generatedUrl = `${window.location.origin}/${data.data[1].shortcode}`;
+      const generatedUrl = `https://buana.me/${data.data.shortcode}`;
+
       setShortUrl(generatedUrl);
 
       toast.success("✅ Url Created Successfully");
       form.reset();
     } catch (err: unknown) {
+      console.log(err);
+
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
         const errors = err.response.data.errors as {
           field: string;
