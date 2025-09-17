@@ -40,10 +40,13 @@ export default function LoginPage() {
         email: values.email,
         password: values.password,
       });
-      toast.success("Login Successful");
+      toast.success("Login Successful", {
+        description: "Redirecting...",
+      });
+
       setTimeout(() => {
-        router.push("/shorten");
-      }, 1000);
+        router.push("/");
+      }, 1500);
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
         const errors = err.response.data.errors as {
