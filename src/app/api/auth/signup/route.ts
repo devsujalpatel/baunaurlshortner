@@ -2,6 +2,8 @@ import { db } from "@/db/db";
 import { userTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { signupSchema } from "@/lib/validations/auth";
+import { hashPasswordWithSalt } from "@/utils/hash";
 
 interface User {
   firstname: string;
@@ -13,14 +15,17 @@ interface User {
 export const POST = async (req: NextRequest) => {
   try {
     const body: User = await req.json();
-    const { firstname, lastname, email, password } = body;
 
-    if (!firstname || !email || !password) {
+    const parsed = signupSchema.safeParse(body);
+
+    if (!parsed.success) {
       return NextResponse.json(
-        { message: "All fields are required" },
+        { errors: parsed.error.flatten().fieldErrors },
         { status: 400 }
       );
     }
+
+    const { firstname, lastname, email, password } = parsed.data;
 
     const [existingUser] = await db
       .select()
@@ -34,11 +39,14 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
+    const { salt, hashedPassword } = hashPasswordWithSalt(password);
+
     await db.insert(userTable).values({
       firstname,
       lastname,
       email,
-      password,
+      salt,
+      password: hashedPassword,
     });
 
     return NextResponse.json(
