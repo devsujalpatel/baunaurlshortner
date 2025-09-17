@@ -82,7 +82,7 @@ export const POST = async (req: NextRequest) => {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to create user" },
+      { error: "Failed to Login user" },
       { status: 500 }
     );
   }
