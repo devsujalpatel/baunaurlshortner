@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 import axios from "axios";
 
@@ -27,7 +27,7 @@ export const formSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 export default function LoginPage() {
-  const router = useRouter();
+  // const router = useRouter();
 
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
 
@@ -52,7 +52,7 @@ export default function LoginPage() {
       });
 
       setTimeout(() => {
-        window.location = "https://bauna.me/shorten" as any;
+        window.location = "https://bauna.me/shorten" as Location & string;
       }, 1000);
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
