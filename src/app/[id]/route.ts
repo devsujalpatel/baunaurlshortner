@@ -7,7 +7,7 @@ export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params; // ⬅️ await is required
+  const { id } = await context.params;
 
   const [result] = await db
     .select({ targetUrl: urlsTable.targetUrl })
@@ -18,5 +18,5 @@ export async function GET(
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  return NextResponse.redirect(result.targetUrl);
+  return NextResponse.redirect(result.targetUrl, { status: 301 });
 }

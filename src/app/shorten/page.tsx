@@ -151,9 +151,13 @@ export default function ShortenUrl() {
       {shortUrl && (
         <Card className="mt-8 w-full max-w-lg border bg-muted/50">
           <CardContent className="flex items-center justify-between px-4">
-            <p className="text-primary font-medium text-md lg:text-lg truncate max-w-[75%]">
+            <a
+              href={shortUrl}
+              target="_blank"
+              className="text-primary font-medium text-md lg:text-lg truncate max-w-[75%]"
+            >
               {shortUrl}
-            </p>
+            </a>
             <Button
               size="icon"
               variant="ghost"
