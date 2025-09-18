@@ -52,8 +52,8 @@ export default function LoginPage() {
       });
 
       setTimeout(() => {
-        router.push("/shorten");
-      }, 1500);
+        window.location = "https://bauna.me/shorten" as any;
+      }, 1000);
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data?.errors) {
         const errors = err.response.data.errors as {
