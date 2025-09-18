@@ -50,7 +50,7 @@ export default function ShortenUrl() {
       });
       const data = response.data;
 
-      const generatedUrl = `https://buana.me/${data.data.shortcode}`;
+      const generatedUrl = `https://bauna.me/${data.data.shortcode}`;
 
       setShortUrl(generatedUrl);
 
