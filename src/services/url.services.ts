@@ -1,5 +1,5 @@
 import { db } from "@/db/db";
-import { urlsTable } from "@/db/schema";
+import { urlsTable } from "@/models/url-schema";
 import { eq } from "drizzle-orm";
 
 export async function getUrlByShortCode(shortCode: string) {
@@ -19,7 +19,6 @@ export async function getUrlByShortCode(shortCode: string) {
     throw error;
   }
 }
-
 
 export async function createShorten(
   shortCode: string,

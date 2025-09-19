@@ -4,13 +4,12 @@ import Link from "next/link";
 export default function LoginPage() {
   return (
     <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
-      <form action="" className="max-w-92 m-auto h-fit w-full">
+      <form action="" className="max-w-[25rem] m-auto h-fit w-full">
         <div className="p-6">
           <div>
-            <h1 className="mb-1 mt-4 text-xl font-semibold">
-              Sign up to Bauna
+            <h1 className="mb-1 mt-4 text-xl font-semibold text-center">
+              Sign up to Get Started with Bauna
             </h1>
-            <p>Welcome! Sign up with Google or Github to get started</p>
           </div>
 
           <div className="mt-6">
