@@ -8,6 +8,7 @@ export default function AuthClientPage() {
       await signInSocial(provider);
     } catch (error) {
       console.error(error);
+      throw new Error("Failed to sign in", { cause: error });
     }
   };
 

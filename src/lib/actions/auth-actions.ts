@@ -14,10 +14,13 @@ export const signInSocial = async (provider: "google" | "github") => {
     body: {
       provider,
       callbackURL: "/shorten",
+      requestSignUp: true,
+      
     },
+    headers: await headers(),
   });
 
-  if(url) {
+  if (url) {
     redirect(url);
   }
 };
