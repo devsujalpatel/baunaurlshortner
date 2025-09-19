@@ -1,24 +1,14 @@
 import { pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
-
-export const userTable = pgTable("user", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  firstname: text("first_name").notNull(),
-  lastname: text("last_name"),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  salt: text("salt").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+import { user } from "./auth-schema";
 
 export const urlsTable = pgTable("urls", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: uuid("id").primaryKey(),
 
   shortCode: varchar("code", { length: 155 }).notNull().unique(),
   targetUrl: text("target_url").notNull(),
 
   userId: uuid("user_id")
-    .references(() => userTable.id)
+    .references(() => user.id)
     .notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
