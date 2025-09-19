@@ -1,4 +1,11 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  varchar,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -59,3 +66,24 @@ export const verification = pgTable("verification", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+export const urlsTable = pgTable("urls", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  shortCode: varchar("code", { length: 155 }).notNull().unique(),
+  targetUrl: text("target_url").notNull(),
+
+  userId: uuid("user_id")
+    .references(() => user.id)
+    .notNull(),
+
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
+});
+
+export const schema = {
+  user,
+  account,
+  session,
+  verification,
+};

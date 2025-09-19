@@ -1,7 +1,23 @@
+"use client";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
+  const handleSignInGithub = async () => {
+    return await authClient.signIn.social({
+      provider: "github",
+      callbackURL: "/shorten",
+      errorCallbackURL: "/error",
+    });
+  };
+  const handleSignInGoogle = async () => {
+    return await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/shorten",
+      errorCallbackURL: "/error",
+    });
+  };
+
   return (
     <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
       <form action="" className="max-w-[25rem] m-auto h-fit w-full">
@@ -13,7 +29,12 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-6">
-            <Button type="button" variant="outline" className="w-full">
+            <Button
+              onClick={handleSignInGoogle}
+              type="button"
+              variant="outline"
+              className="w-full"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="0.98em"
@@ -41,7 +62,12 @@ export default function LoginPage() {
             </Button>
           </div>
           <div className="mt-6">
-            <Button type="button" variant="outline" className="w-full">
+            <Button
+              onClick={handleSignInGithub}
+              type="button"
+              variant="outline"
+              className="w-full"
+            >
               <svg
                 viewBox="0 -3.5 256 256"
                 xmlns="http://www.w3.org/2000/svg"
@@ -67,13 +93,6 @@ export default function LoginPage() {
             </Button>
           </div>
         </div>
-
-        <p className="text-accent-foreground text-center text-sm">
-          Don't Have an account ?
-          <Button asChild variant="link" className="px-2">
-            <Link href="/auth/sign-up">Sign Up</Link>
-          </Button>
-        </p>
       </form>
     </section>
   );
