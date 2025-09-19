@@ -14,7 +14,7 @@ const menuItems = [
 
 type Session = typeof auth.$Infer.Session;
 
-export const HeroHeader = ({ session }: { session: Session }) => {
+export const HeroHeader = ({ session }: { session: Session | null }) => {
   const [menuState, setMenuState] = React.useState(false);
 
   return (
@@ -50,7 +50,7 @@ export const HeroHeader = ({ session }: { session: Session }) => {
                 {session ? (
                   <li>
                     <Link
-                      href="/api/auth/profile"
+                      href="/profile"
                       className="text-muted-foreground hover:text-accent-foreground block duration-150"
                     >
                       <Image
@@ -65,7 +65,7 @@ export const HeroHeader = ({ session }: { session: Session }) => {
                 ) : (
                   <li>
                     <Link
-                      href="/api/auth/signi-n"
+                      href="/auth"
                       className="text-muted-foreground hover:text-accent-foreground block duration-150"
                     >
                       Sign In

@@ -1,16 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { auth } from "@/lib/auth";
-import { authClient } from "@/lib/auth-client";
+import { signInSocial } from "@/lib/actions/auth-actions";
 
-export default function LoginPage() {
+export default function AuthClientPage() {
   const handleSignIn = async (provider: "google" | "github") => {
     try {
-      // return await auth.api.signInSocial({
-      //   provider,
-      //   callbackURL: "/dashboard",
-      //   errorCallbackURL: "/error",
-      // });
+      await signInSocial(provider);
     } catch (error) {
       console.error(error);
     }
