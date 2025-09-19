@@ -8,7 +8,6 @@ interface DecodedToken extends JwtPayload {
   id: string;
 }
 
-
 export const POST = async (req: NextRequest) => {
   try {
     const token = req.cookies.get("token")?.value;
@@ -37,7 +36,7 @@ export const POST = async (req: NextRequest) => {
     const userId = decoded.id;
 
     const body = await req.json();
-    
+
     const parsed = await shortenBodySchema.safeParseAsync(body);
 
     if (!parsed.success) {
