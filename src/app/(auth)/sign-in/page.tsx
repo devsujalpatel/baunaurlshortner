@@ -1,21 +1,19 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 
 export default function LoginPage() {
-  const handleSignInGithub = async () => {
-    return await authClient.signIn.social({
-      provider: "github",
-      callbackURL: "/shorten",
-      errorCallbackURL: "/error",
-    });
-  };
-  const handleSignInGoogle = async () => {
-    return await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/shorten",
-      errorCallbackURL: "/error",
-    });
+  const handleSignIn = async (provider: "google" | "github") => {
+    try {
+      // return await auth.api.signInSocial({
+      //   provider,
+      //   callbackURL: "/dashboard",
+      //   errorCallbackURL: "/error",
+      // });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -30,7 +28,7 @@ export default function LoginPage() {
 
           <div className="mt-6">
             <Button
-              onClick={handleSignInGoogle}
+              onClick={() => handleSignIn("google")}
               type="button"
               variant="outline"
               className="w-full"
@@ -63,7 +61,7 @@ export default function LoginPage() {
           </div>
           <div className="mt-6">
             <Button
-              onClick={handleSignInGithub}
+              onClick={() => handleSignIn("github")}
               type="button"
               variant="outline"
               className="w-full"

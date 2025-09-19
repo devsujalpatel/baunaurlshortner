@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import React from "react";
 import Image from "next/image";
+import { auth } from "@/lib/auth";
 
 const menuItems = [
   { name: "Home", href: "/" },
@@ -11,7 +12,9 @@ const menuItems = [
   { name: "Profile", href: "#profile" },
 ];
 
-export const HeroHeader = () => {
+type Session = typeof auth.$Infer.Session;
+
+export const HeroHeader = ({ session }: { session: Session }) => {
   const [menuState, setMenuState] = React.useState(false);
 
   return (
@@ -44,6 +47,31 @@ export const HeroHeader = () => {
                     </Link>
                   </li>
                 ))}
+                {session ? (
+                  <li>
+                    <Link
+                      href="/api/auth/profile"
+                      className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                    >
+                      <Image
+                        src={session.user.image ?? ""}
+                        alt={session.user.name ?? ""}
+                        width={25}
+                        height={25}
+                        className="rounded-full"
+                      />
+                    </Link>
+                  </li>
+                ) : (
+                  <li>
+                    <Link
+                      href="/api/auth/signi-n"
+                      className="text-muted-foreground hover:text-accent-foreground block duration-150"
+                    >
+                      Sign In
+                    </Link>
+                  </li>
+                )}
               </ul>
             </div>
 
