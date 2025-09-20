@@ -2,41 +2,27 @@ import { shortenBodySchema } from "@/lib/validations/shorten";
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { createShorten, getUrlByShortCode } from "@/services/url.services";
-import jwt, { JwtPayload } from "jsonwebtoken";
-
-interface DecodedToken extends JwtPayload {
-  id: string;
-}
+import { auth } from "@/lib/auth"; // Better Auth instance
 
 export const POST = async (req: NextRequest) => {
   try {
-    const token = req.cookies.get("token")?.value;
+    // Get cookies (Better Auth uses cookies)
+    const headers = new Headers(req.headers);
+    const cookies = req.cookies;
 
-    if (!token) {
+    // Get current user
+    const session = await auth.api.getSession({ headers });
+
+    if (!session) {
       return NextResponse.json(
-        { errors: [{ field: "token", message: "Missing token" }] },
+        { errors: [{ message: "Unauthorized" }] },
         { status: 401 }
       );
     }
 
-    let decoded: DecodedToken;
-
-    try {
-      decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET as string
-      ) as DecodedToken;
-    } catch {
-      return NextResponse.json(
-        { errors: [{ field: "token", message: "Invalid token" }] },
-        { status: 401 }
-      );
-    }
-
-    const userId = decoded.id;
-
+    const userId = session.user.id;
+    // Parse request body
     const body = await req.json();
-
     const parsed = await shortenBodySchema.safeParseAsync(body);
 
     if (!parsed.success) {
@@ -47,9 +33,9 @@ export const POST = async (req: NextRequest) => {
     }
 
     const { url, code } = parsed.data;
-
     const shortCode = code || nanoid(6);
 
+    // Check for existing shortcode
     const existingShortCode = await getUrlByShortCode(shortCode);
     if (existingShortCode) {
       return NextResponse.json(
@@ -60,6 +46,7 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
+    // Create new shortened URL
     const result = await createShorten(shortCode, url, userId);
 
     return NextResponse.json(
