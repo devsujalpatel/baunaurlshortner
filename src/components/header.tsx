@@ -18,10 +18,10 @@ export const HeroHeader = ({ session }: { session: Session | null }) => {
   const [menuState, setMenuState] = React.useState(false);
 
   return (
-    <header>
+    <header className="fixed top-0 left-0 z-50">
       <nav
         data-state={menuState && "active"}
-        className="bg-background/50 fixed z-20 w-full border-b backdrop-blur-3xl"
+        className="bg-background/50 fixed z-50 w-full border-b backdrop-blur-3xl"
       >
         <div className="mx-auto max-w-6xl px-6 transition-all duration-300">
           <div className="relative flex items-center justify-between py-3 lg:py-4">
@@ -30,7 +30,7 @@ export const HeroHeader = ({ session }: { session: Session | null }) => {
               aria-label="home"
               className="flex items-center space-x-2"
             >
-              <Image src="/logo.png" alt="logo" width={25} height={20} />
+              <Image src="/logo.png" alt="logo" className="w-full" width={25} height={20} />
               <h1 className="text-xl font-bold">Bauna</h1>
             </Link>
 

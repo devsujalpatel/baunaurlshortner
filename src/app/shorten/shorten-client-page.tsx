@@ -87,7 +87,7 @@ export default function ShortenClientPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start px-4 py-12">
+    <main className="flex min-h-screen w-[50rem] flex-col items-center justify-start px-4 py-12">
       <div className="text-center mb-8 mt-40">
         <h1 className="mb-2 text-3xl md:text-4xl font-bold">
           Create Your Own Short URL
