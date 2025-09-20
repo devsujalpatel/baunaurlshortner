@@ -6,11 +6,7 @@ import { auth } from "@/lib/auth"; // Better Auth instance
 
 export const POST = async (req: NextRequest) => {
   try {
-    // Get cookies (Better Auth uses cookies)
     const headers = new Headers(req.headers);
-    const cookies = req.cookies;
-
-    // Get current user
     const session = await auth.api.getSession({ headers });
 
     if (!session) {
@@ -21,7 +17,6 @@ export const POST = async (req: NextRequest) => {
     }
 
     const userId = session.user.id;
-    // Parse request body
     const body = await req.json();
     const parsed = await shortenBodySchema.safeParseAsync(body);
 

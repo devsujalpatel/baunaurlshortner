@@ -25,18 +25,39 @@ export async function createShorten(
   url: string,
   userId: string
 ) {
-  const [result] = await db
-    .insert(urlsTable)
-    .values({
-      shortCode,
-      targetUrl: url,
-      userId,
-    })
-    .returning({
-      id: urlsTable.id,
-      shortCode: urlsTable.shortCode,
-      targetUrl: urlsTable.targetUrl,
-    });
+  try {
+    const [result] = await db
+      .insert(urlsTable)
+      .values({
+        shortCode,
+        targetUrl: url,
+        userId,
+      })
+      .returning({
+        id: urlsTable.id,
+        shortCode: urlsTable.shortCode,
+        targetUrl: urlsTable.targetUrl,
+      });
 
-  return result;
+    return result;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getAllUrlByUserId(userId: string) {
+  try {
+    const urls = await db
+      .select({
+        id: urlsTable.id,
+        shortCode: urlsTable.shortCode,
+        targetUrl: urlsTable.targetUrl,
+      })
+      .from(urlsTable)
+      .where(eq(urlsTable.userId, userId));
+
+    return urls;
+  } catch (error) {
+    throw error;
+  }
 }
